@@ -1000,19 +1000,36 @@
       token: localStorage.getItem(CFG_KEYS.token) || '',
     };
 
+    // The repo this page is deployed to. Used as a read-only fallback so
+    // visitors without a token can still browse the archive (public repos only).
+    const PAGES_REPO = { owner: 'Codeniu', repo: 'prompt-archive' };
+
     function isConfigured() {
       return !!(cfg.owner && cfg.repo && cfg.token);
     }
+    // Read-only mode: no token, fall back to the deployed repo (or ?repo=owner/repo).
+    function getReadRepo() {
+      const q = new URLSearchParams(location.search).get('repo');
+      if (q && q.includes('/')) {
+        const [o, r] = q.split('/', 2);
+        if (o && r) return { owner: o, repo: r };
+      }
+      if (cfg.owner && cfg.repo) return { owner: cfg.owner, repo: cfg.repo };
+      return { owner: PAGES_REPO.owner, repo: PAGES_REPO.repo };
+    }
+    function readOnly() { return !cfg.token; }
 
     function ghBase() {
-      return `https://api.github.com/repos/${cfg.owner}/${cfg.repo}`;
+      const r = getReadRepo();
+      return `https://api.github.com/repos/${r.owner}/${r.repo}`;
     }
     function ghHeaders(extra = {}) {
-      return Object.assign({
-        'Authorization': `Bearer ${cfg.token}`,
+      const h = {
         'Accept': 'application/vnd.github+json',
         'X-GitHub-Api-Version': '2022-11-28',
-      }, extra);
+      };
+      if (cfg.token) h['Authorization'] = `Bearer ${cfg.token}`;
+      return Object.assign(h, extra);
     }
 
     // ───── State ────────────────────────────────────────────────
@@ -1366,8 +1383,9 @@
       const total = ordered.length;
 
       // Ledger meta with repo link
-      const repoUrl = cfg.owner && cfg.repo ? `https://github.com/${cfg.owner}/${cfg.repo}/issues` : '#';
-      const repoLabel = cfg.owner && cfg.repo ? `${cfg.owner}/${cfg.repo}` : '未配置';
+      const readRepo = getReadRepo();
+      const repoUrl = readRepo.owner && readRepo.repo ? `https://github.com/${readRepo.owner}/${readRepo.repo}/issues` : '#';
+      const repoLabel = readRepo.owner && readRepo.repo ? `${readRepo.owner}/${readRepo.repo}${readOnly() ? ' · 只读' : ''}` : '未配置';
       $('ledgerMeta').innerHTML = `${padNum(total)} 条记录 · <a class="repo-link" href="${repoUrl}" target="_blank" rel="noopener">${escapeHtml(repoLabel)}</a>`;
 
       if (total === 0) {
@@ -1409,7 +1427,7 @@
           ${tags.length ? `<div class="card-tags">${tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
           <div class="card-actions" onclick="event.stopPropagation()">
             <button class="btn-link" onclick="copyPrompt(${p.number})">誊抄</button>
-            <button class="btn-link danger" onclick="deletePrompt(${p.number})">销毁</button>
+            ${readOnly() ? '' : `<button class="btn-link danger" onclick="deletePrompt(${p.number})">销毁</button>`}
           </div>
         </article>`;
       }).join('');
@@ -1422,15 +1440,21 @@
 
     // ───── Load ─────────────────────────────────────────────────
     async function loadPrompts() {
-      if (!isConfigured()) {
-        render();
-        return;
-      }
+      // Try read-only load first even without a token (public repos only).
+      // Write actions (create/edit/delete) still require configuration + token.
       try {
         const issues = await ghListIssues();
         allPrompts = issues;
         render();
+        if (readOnly()) {
+          showToast('只读模式 · 点 ⚙ 配置 Token 后可编辑', false);
+        }
       } catch (e) {
+        // If read-only fetch failed, show the appropriate empty state.
+        if (!isConfigured()) {
+          render();
+          return;
+        }
         $('grid').innerHTML = `<div class="state">
           <div class="state-mark">!</div>
           <div class="state-title">载入失败</div>
@@ -1449,6 +1473,7 @@
       const isCreate = mode === 'create';
       const isView = mode === 'view';
       const isEdit = mode === 'edit';
+      const ro = readOnly();
 
       $('viewBlock').hidden = !isView;
       $('fieldTitle').hidden = isView;
@@ -1458,7 +1483,7 @@
       $('detailMeta').hidden = isCreate;
 
       $('copyBtn').hidden = !isView;
-      $('editToggleBtn').hidden = !isView;
+      $('editToggleBtn').hidden = !isView || ro;
       $('editToggleBtn').textContent = '编辑';
       $('saveBtn').hidden = isView;
       $('saveBtn').textContent = isCreate ? '归档' : '保存修改';
@@ -1788,6 +1813,8 @@
     });
 
     // ───── Init ─────────────────────────────────────────────────
+    // Read-only visitors (no token) can browse but not write.
+    if (readOnly()) $('addBtn').hidden = true;
     loadPrompts();
   </script>
 </body>
