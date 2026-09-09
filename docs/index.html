@@ -1487,7 +1487,7 @@
       editingNumber = number;
       const { content, images } = parseBody(p.body);
       viewImageCache = images;
-      $('title').value = content;
+      $('title').value = p.title || '';
       $('content').value = content;
       $('tags').value = labelsToTags(p.labels).join(', ');
       pendingImages = [];
