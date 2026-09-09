@@ -625,6 +625,190 @@
     :focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
     .btn:focus-visible { outline-offset: 3px; }
 
+    /* ───── Image upload & thumbnails ──────────────────────────── */
+    .dropzone {
+      border: 1.5px dashed var(--rule-strong);
+      border-radius: var(--r-soft);
+      background: var(--paper);
+      padding: 18px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .dropzone:hover, .dropzone.dragover {
+      border-color: var(--stamp);
+      background: var(--stamp-soft);
+    }
+    .dropzone:focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+    .dz-mark {
+      font-family: var(--font-serif);
+      font-size: 20px;
+      color: var(--ink-faint);
+      line-height: 1;
+    }
+    .dropzone-text {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      color: var(--ink-soft);
+      letter-spacing: 0.04em;
+    }
+
+    .upload-thumbs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .upload-thumbs:empty { display: none; }
+    .upload-thumb {
+      position: relative;
+      width: 64px; height: 64px;
+      border: 1px solid var(--rule);
+      border-radius: var(--r-sharp);
+      overflow: hidden;
+      background: var(--paper-card);
+    }
+    .upload-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .upload-thumb .remove {
+      position: absolute;
+      top: 2px; right: 2px;
+      width: 18px; height: 18px;
+      background: oklch(20% 0.02 60 / 0.7);
+      color: var(--paper-raised);
+      border: none;
+      border-radius: 50%;
+      font-size: 12px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+    .upload-thumb .remove:hover { background: var(--stamp-deep); }
+
+    /* Card thumbnails (list view, up to 3) */
+    .card-thumbs {
+      display: flex;
+      gap: 6px;
+      margin-top: 2px;
+    }
+    .card-thumbs:empty { display: none; }
+    .card-thumb {
+      flex: 1 1 0;
+      min-width: 0;
+      aspect-ratio: 4 / 3;
+      border: 1px solid var(--rule);
+      border-radius: var(--r-sharp);
+      overflow: hidden;
+      background: var(--paper-card);
+      cursor: zoom-in;
+      position: relative;
+    }
+    .card-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .card-thumb:hover { border-color: var(--stamp); }
+    .card-thumb .more-overlay {
+      position: absolute;
+      inset: 0;
+      background: oklch(15% 0.02 55 / 0.55);
+      color: var(--paper-raised);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-size: 18px;
+    }
+
+    /* Detail view images (show all) */
+    .view-images {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .view-images:empty { display: none; }
+    .view-image {
+      aspect-ratio: 4 / 3;
+      border: 1px solid var(--rule);
+      border-radius: var(--r-sharp);
+      overflow: hidden;
+      background: var(--paper-card);
+      cursor: zoom-in;
+    }
+    .view-image img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .view-image:hover { border-color: var(--stamp); }
+
+    /* Lightbox */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: oklch(12% 0.02 55 / 0.92);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 300;
+      padding: 40px;
+      animation: fade 0.18s ease;
+    }
+    .lightbox.show { display: flex; }
+    .lightbox img {
+      max-width: 90vw;
+      max-height: 85vh;
+      object-fit: contain;
+      border: 4px solid var(--paper-raised);
+      box-shadow: 0 8px 40px oklch(0% 0 0 / 0.5);
+    }
+    .lightbox-close {
+      position: absolute;
+      top: 20px; right: 24px;
+      background: none;
+      border: 1px solid var(--paper-raised);
+      color: var(--paper-raised);
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      font-size: 20px;
+      cursor: pointer;
+      padding: 0;
+    }
+    .lightbox-close:hover { background: var(--stamp); border-color: var(--stamp); }
+    .lightbox-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: oklch(20% 0.02 60 / 0.6);
+      border: 1px solid var(--paper-raised);
+      color: var(--paper-raised);
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      font-size: 22px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+    }
+    .lightbox-nav:hover { background: var(--stamp); border-color: var(--stamp); }
+    .lightbox-prev { left: 24px; }
+    .lightbox-next { right: 24px; }
+    .lightbox-counter {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: var(--paper-raised);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      background: oklch(20% 0.02 60 / 0.6);
+      padding: 6px 14px;
+      border-radius: 999px;
+    }
+
     @media (max-width: 720px) {
       .masthead-inner { padding: 14px 18px; gap: 14px; }
       .brand-title { font-size: 22px; }
@@ -636,6 +820,12 @@
       .grid { grid-template-columns: 1fr; }
       .sheet { box-shadow: 4px 4px 0 var(--rule-strong); }
       .overlay { padding: 16px; align-items: flex-start; }
+      .lightbox { padding: 12px; }
+      .lightbox img { border-width: 2px; }
+      .lightbox-nav { width: 38px; height: 38px; font-size: 18px; }
+      .lightbox-prev { left: 8px; }
+      .lightbox-next { right: 8px; }
+      .lightbox-close { top: 12px; right: 12px; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -714,6 +904,8 @@
           <div class="view-content" id="viewContent"></div>
           <div class="field-label" style="margin-top:18px;" id="viewTagsLabel">标签</div>
           <div class="view-tags" id="viewTags"></div>
+          <div class="field-label" style="margin-top:18px;" id="viewImagesLabel" hidden>结果截图</div>
+          <div class="view-images" id="viewImages"></div>
         </div>
 
         <div class="field" id="fieldTitle">
@@ -728,6 +920,16 @@
         <div class="field" id="fieldTags">
           <label class="field-label" for="tags">标签 · 以逗号分隔</label>
           <input type="text" class="input" id="tags" placeholder="例如：写作, 翻译, 编程" />
+        </div>
+        <div class="field" id="fieldImages">
+          <label class="field-label">结果截图 · 可多选</label>
+          <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="选择图片">
+            <span class="dz-mark">⊞</span>
+            <span class="dropzone-text">拖入截图或点击选择 · 多张可选</span>
+          </div>
+          <input type="file" id="fileInput" accept="image/*" multiple hidden />
+          <div class="upload-thumbs" id="uploadThumbs"></div>
+          <div class="field-hint">图片上传至仓库 <code>images/</code> 目录，URL 写入 issue 正文</div>
         </div>
       </div>
       <div class="sheet-footer">
@@ -775,6 +977,15 @@
     </div>
   </div>
 
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="图片放大">
+    <button class="lightbox-close" id="lightboxClose" aria-label="关闭">×</button>
+    <button class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="上一张">‹</button>
+    <img id="lightboxImg" src="" alt="" />
+    <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="下一张">›</button>
+    <div class="lightbox-counter" id="lightboxCounter"></div>
+  </div>
+
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
@@ -811,6 +1022,13 @@
     let modalMode = 'create'; // 'create' | 'view' | 'edit'
     let editingNumber = null;
 
+    // Image-related state
+    let pendingImages = [];   // { type:'existing', url } | { type:'new', name, data }
+    let lightboxImgs = [];
+    let lightboxIdx = 0;
+    const cardImagesCache = {}; // number -> [urls]
+    let viewImageCache = [];    // current detail-view image list
+
     // ───── Helpers ──────────────────────────────────────────────
     function showToast(msg, isError = false) {
       const t = $('toast');
@@ -839,11 +1057,54 @@
       div.textContent = s == null ? '' : String(s);
       return div.innerHTML;
     }
+    function escapeAttr(s) {
+      return String(s == null ? '' : s)
+        .replace(/&/g, '&amp;')
+        .replace(/"/g, '&quot;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
 
     function labelsToTags(labels) {
       return (labels || [])
         .map(l => (typeof l === 'string' ? l : l.name))
         .filter(n => n && n.toLowerCase() !== 'prompt-archive'); // ignore the marker label
+    }
+
+    // ───── Issue body <-> (content + images) ───────────────────
+    // Image URLs are stored in a delimited block at the end of the body
+    // so they survive round-trips and stay separable from prompt text.
+    const IMG_START = '<!--pa-images-->';
+    const IMG_END = '<!--/pa-images-->';
+    const IMG_RE = /!\[[^\]]*\]\((https?:\/\/[^\s)]+)\)/g;
+
+    function parseBody(rawBody) {
+      const body = rawBody || '';
+      const startIdx = body.indexOf(IMG_START);
+      if (startIdx === -1) return { content: body, images: [] };
+      const endIdx = body.indexOf(IMG_END, startIdx);
+      const imgBlock = endIdx === -1
+        ? body.slice(startIdx)
+        : body.slice(startIdx, endIdx + IMG_END.length);
+      const imgText = endIdx === -1
+        ? body.slice(startIdx + IMG_START.length)
+        : body.slice(startIdx + IMG_START.length, endIdx);
+      let content = endIdx === -1
+        ? body.slice(0, startIdx)
+        : body.slice(0, startIdx) + body.slice(endIdx + IMG_END.length);
+      content = content.replace(/\n{3,}/g, '\n\n').trim();
+      const images = [];
+      let m;
+      IMG_RE.lastIndex = 0;
+      while ((m = IMG_RE.exec(imgText)) !== null) images.push(m[1]);
+      return { content, images };
+    }
+
+    function buildBody(content, imageUrls) {
+      const text = (content || '').trim();
+      if (!imageUrls || !imageUrls.length) return text;
+      const imgLines = imageUrls.map(u => `![截图](${u})`).join('\n');
+      return `${text}\n\n${IMG_START}\n${imgLines}\n${IMG_END}`;
     }
 
     // ───── GitHub API: prompts (issues) ─────────────────────────
@@ -919,6 +1180,140 @@
       if (!res.ok) throw new Error(`销毁失败（${res.status}）`);
       return await res.json();
     }
+
+    // ───── GitHub API: image upload (Contents API) ─────────────
+    async function ghUploadImage(name, dataUrl) {
+      // dataUrl looks like "data:image/png;base64,...."
+      const commaIdx = dataUrl.indexOf(',');
+      const header = dataUrl.slice(0, commaIdx);
+      const base64 = dataUrl.slice(commaIdx + 1);
+      let ext = 'png';
+      if (header.includes('image/jpeg') || header.includes('image/jpg')) ext = 'jpg';
+      else if (header.includes('image/gif')) ext = 'gif';
+      else if (header.includes('image/webp')) ext = 'webp';
+      else if (header.includes('image/png')) ext = 'png';
+      const ts = Date.now();
+      const rand = Math.random().toString(36).slice(2, 8);
+      const path = `images/${ts}-${rand}.${ext}`;
+      const res = await fetch(`${ghBase()}/contents/${path}`, {
+        method: 'PUT',
+        headers: ghHeaders({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({
+          message: `upload image ${path}`,
+          content: base64,
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(`图片上传失败（${res.status}）${data.message ? '：' + data.message : ''}`);
+      }
+      const data = await res.json();
+      // Prefer raw.githubusercontent.com for stable hotlinking
+      return data.download_url || data.html_url ||
+        `https://raw.githubusercontent.com/${cfg.owner}/${cfg.repo}/HEAD/${path}`;
+    }
+
+    // ───── Image upload UI ──────────────────────────────────────
+    function handleFiles(files) {
+      const imgs = Array.from(files).filter(f => f.type.startsWith('image/'));
+      if (!imgs.length) return;
+      let remaining = imgs.length;
+      imgs.forEach(f => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          pendingImages.push({ type: 'new', name: f.name, data: e.target.result });
+          if (--remaining === 0) renderUploadThumbs();
+        };
+        reader.onerror = () => { if (--remaining === 0) renderUploadThumbs(); };
+        reader.readAsDataURL(f);
+      });
+    }
+
+    function renderUploadThumbs() {
+      const c = $('uploadThumbs');
+      if (!pendingImages.length) { c.innerHTML = ''; return; }
+      c.innerHTML = pendingImages.map((img, i) => {
+        const src = img.type === 'existing' ? img.url : img.data;
+        return `<div class="upload-thumb">
+          <img src="${escapeAttr(src)}" alt="" loading="lazy" />
+          <button class="remove" data-idx="${i}" aria-label="移除图片" title="移除">×</button>
+        </div>`;
+      }).join('');
+      c.querySelectorAll('.remove').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const idx = parseInt(btn.dataset.idx, 10);
+          pendingImages.splice(idx, 1);
+          renderUploadThumbs();
+        });
+      });
+    }
+
+    // ───── Card thumbnails (list view, up to 3) ────────────────
+    function renderCardThumbs(number, images) {
+      if (!images || !images.length) return '';
+      const show = images.slice(0, 3);
+      const extra = images.length - 3;
+      return `<div class="card-thumbs" onclick="event.stopPropagation()">
+        ${show.map((url, i) => {
+          const overlay = (i === 2 && extra > 0)
+            ? `<div class="more-overlay">+${extra}</div>` : '';
+          return `<div class="card-thumb" onclick="openCardLightbox(${number}, ${i})">
+            <img src="${escapeAttr(url)}" alt="" loading="lazy" />${overlay}
+          </div>`;
+        }).join('')}
+      </div>`;
+    }
+
+    // ───── Detail view images (show all) ───────────────────────
+    function renderViewImages(images) {
+      const c = $('viewImages');
+      if (!images || !images.length) {
+        c.innerHTML = '';
+        $('viewImagesLabel').hidden = true;
+        return;
+      }
+      $('viewImagesLabel').hidden = false;
+      c.innerHTML = images.map((url, i) =>
+        `<div class="view-image" onclick="openLightbox(viewImageCache, ${i})">
+          <img src="${escapeAttr(url)}" alt="" loading="lazy" />
+        </div>`
+      ).join('');
+    }
+
+    // ───── Lightbox ────────────────────────────────────────────
+    function openLightbox(images, idx) {
+      if (!images || !images.length) return;
+      lightboxImgs = images;
+      lightboxIdx = Math.max(0, Math.min(idx || 0, images.length - 1));
+      $('lightboxImg').src = images[lightboxIdx];
+      updateLightbox();
+      $('lightbox').classList.add('show');
+      document.body.style.overflow = 'hidden';
+    }
+    function updateLightbox() {
+      $('lightboxCounter').textContent = lightboxImgs.length > 1
+        ? `${lightboxIdx + 1} / ${lightboxImgs.length}` : '';
+      const showNav = lightboxImgs.length > 1;
+      $('lightboxPrev').style.display = showNav ? '' : 'none';
+      $('lightboxNext').style.display = showNav ? '' : 'none';
+    }
+    function closeLightbox() {
+      $('lightbox').classList.remove('show');
+      $('lightboxImg').src = '';
+      document.body.style.overflow = '';
+    }
+    function lightboxStep(delta) {
+      if (!lightboxImgs.length) return;
+      lightboxIdx = (lightboxIdx + delta + lightboxImgs.length) % lightboxImgs.length;
+      $('lightboxImg').src = lightboxImgs[lightboxIdx];
+      updateLightbox();
+    }
+    window.openLightbox = openLightbox;
+    window.openCardLightbox = function(number, idx) {
+      const imgs = cardImagesCache[number] || [];
+      if (imgs.length) openLightbox(imgs, idx);
+    };
 
     // ───── Render: categories ───────────────────────────────────
     function getAllTags() {
@@ -1000,6 +1395,8 @@
 
       grid.innerHTML = ordered.map((p, i) => {
         const tags = labelsToTags(p.labels);
+        const { content, images } = parseBody(p.body);
+        cardImagesCache[p.number] = images;
         return `
         <article class="card card-clickable" role="listitem" tabindex="0" data-number="${p.number}" onclick="openDetail(${p.number})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openDetail(${p.number})}">
           <div class="card-top">
@@ -1007,7 +1404,8 @@
             <span class="card-date">${formatDate(p.created_at)}</span>
           </div>
           <h3 class="card-title">${escapeHtml(p.title || '（无题）')}</h3>
-          <div class="card-content">${escapeHtml(p.body || '')}</div>
+          <div class="card-content">${escapeHtml(content)}</div>
+          ${renderCardThumbs(p.number, images)}
           ${tags.length ? `<div class="card-tags">${tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
           <div class="card-actions" onclick="event.stopPropagation()">
             <button class="btn-link" onclick="copyPrompt(${p.number})">誊抄</button>
@@ -1056,6 +1454,7 @@
       $('fieldTitle').hidden = isView;
       $('fieldContent').hidden = isView;
       $('fieldTags').hidden = isView;
+      $('fieldImages').hidden = isView;
       $('detailMeta').hidden = isCreate;
 
       $('copyBtn').hidden = !isView;
@@ -1073,6 +1472,8 @@
       $('title').value = '';
       $('content').value = '';
       $('tags').value = '';
+      pendingImages = [];
+      renderUploadThumbs();
       setModalMode('create');
       $('modal').classList.add('show');
       document.body.style.overflow = 'hidden';
@@ -1084,9 +1485,13 @@
       const p = allPrompts.find(x => x.number === number);
       if (!p) return;
       editingNumber = number;
-      $('title').value = p.title || '';
-      $('content').value = p.body || '';
+      const { content, images } = parseBody(p.body);
+      viewImageCache = images;
+      $('title').value = content;
+      $('content').value = content;
       $('tags').value = labelsToTags(p.labels).join(', ');
+      pendingImages = [];
+      renderUploadThumbs();
 
       $('metaNo').textContent = 'No. ' + padNum(p.number);
       $('metaCreated').textContent = formatDateTime(p.created_at);
@@ -1104,7 +1509,8 @@
       }
 
       $('viewTitle').textContent = p.title || '（无题）';
-      $('viewContent').textContent = p.body || '';
+      $('viewContent').textContent = content;
+      renderViewImages(images);
       const tags = labelsToTags(p.labels);
       if (tags.length) {
         $('viewTagsLabel').hidden = false;
@@ -1123,6 +1529,8 @@
       document.body.style.overflow = '';
       editingNumber = null;
       modalMode = 'create';
+      pendingImages = [];
+      renderUploadThumbs();
     }
 
     async function savePrompt() {
@@ -1141,8 +1549,20 @@
       btn.textContent = '保存中…';
 
       try {
+        // Upload newly-added images first; keep existing ones as-is.
+        const uploadedUrls = [];
+        for (const item of pendingImages) {
+          if (item.type === 'existing') {
+            uploadedUrls.push(item.url);
+          } else {
+            const url = await ghUploadImage(item.name, item.data);
+            uploadedUrls.push(url);
+          }
+        }
+        const body = buildBody(content, uploadedUrls);
+
         if (modalMode === 'edit' && editingNumber) {
-          const updated = await ghUpdateIssue(editingNumber, title, content, tags);
+          const updated = await ghUpdateIssue(editingNumber, title, body, tags);
           const idx = allPrompts.findIndex(p => p.number === editingNumber);
           if (idx >= 0) allPrompts[idx] = updated;
           showToast('已修订');
@@ -1150,7 +1570,7 @@
           openDetail(updated.number);
           render();
         } else {
-          const created = await ghCreateIssue(title, content, tags);
+          const created = await ghCreateIssue(title, body, tags);
           allPrompts.push(created);
           render();
           showToast('已归档');
@@ -1279,6 +1699,15 @@
     $('cancelBtn').addEventListener('click', closeModal);
     $('copyBtn').addEventListener('click', () => copyPrompt(editingNumber));
     $('editToggleBtn').addEventListener('click', () => {
+      // Seed the editor with the entry's existing images so they can be kept/removed.
+      if (editingNumber) {
+        const p = allPrompts.find(x => x.number === editingNumber);
+        if (p) {
+          const { images } = parseBody(p.body);
+          pendingImages = images.map(url => ({ type: 'existing', url }));
+          renderUploadThumbs();
+        }
+      }
       setModalMode('edit');
       setTimeout(() => $('title').focus(), 50);
     });
@@ -1300,14 +1729,52 @@
       renderGrid();
     });
 
+    // ───── Image dropzone & lightbox events ─────────────────────
+    const dz = $('dropzone');
+    const fi = $('fileInput');
+    dz.addEventListener('click', () => fi.click());
+    dz.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fi.click(); }
+    });
+    fi.addEventListener('change', () => { handleFiles(fi.files); fi.value = ''; });
+    ['dragenter', 'dragover'].forEach(ev => {
+      dz.addEventListener(ev, (e) => { e.preventDefault(); dz.classList.add('dragover'); });
+    });
+    ['dragleave', 'drop'].forEach(ev => {
+      dz.addEventListener(ev, (e) => { e.preventDefault(); dz.classList.remove('dragover'); });
+    });
+    dz.addEventListener('drop', (e) => {
+      if (e.dataTransfer && e.dataTransfer.files) handleFiles(e.dataTransfer.files);
+    });
+    // Paste images directly into the dropzone area
+    dz.addEventListener('paste', (e) => {
+      if (e.clipboardData && e.clipboardData.files && e.clipboardData.files.length) {
+        handleFiles(e.clipboardData.files);
+      }
+    });
+
+    $('lightboxClose').addEventListener('click', closeLightbox);
+    $('lightboxPrev').addEventListener('click', () => lightboxStep(-1));
+    $('lightboxNext').addEventListener('click', () => lightboxStep(1));
+    $('lightbox').addEventListener('click', (e) => {
+      if (e.target === $('lightbox')) closeLightbox();
+    });
+
     document.addEventListener('keydown', (e) => {
       const promptOpen = $('modal').classList.contains('show');
       const settingsOpen = $('settingsModal').classList.contains('show');
-      const anyOpen = promptOpen || settingsOpen;
+      const lightboxOpen = $('lightbox').classList.contains('show');
+      const anyOpen = promptOpen || settingsOpen || lightboxOpen;
 
       if (e.key === 'Escape') {
+        if (lightboxOpen) { closeLightbox(); return; }
         if (promptOpen) closeModal();
         else if (settingsOpen) closeSettings();
+      }
+      if (lightboxOpen) {
+        if (e.key === 'ArrowLeft') { e.preventDefault(); lightboxStep(-1); }
+        if (e.key === 'ArrowRight') { e.preventDefault(); lightboxStep(1); }
+        return;
       }
       if (anyOpen && (e.ctrlKey || e.metaKey) && e.key === 'Enter') {
         e.preventDefault();
