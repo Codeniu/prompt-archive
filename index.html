@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>提示词档 · Prompt Archive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,400;9..144,500;9..144,700;9..144,900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      /* Editorial archive palette — warm paper, ink, vermilion stamp */
+      --paper:        oklch(96% 0.014 80);     /* page background */
+      --paper-card:   oklch(98.5% 0.008 80);   /* card surface */
+      --paper-raised: oklch(99% 0.004 80);     /* highest surface (modal) */
+      --rule:         oklch(84% 0.012 70);     /* hairline rules */
+      --rule-strong:  oklch(70% 0.014 65);     /* heavier rules */
+      --ink:          oklch(22% 0.020 55);     /* primary text, warm near-black */
+      --ink-soft:     oklch(38% 0.014 60);     /* secondary text */
+      --ink-faint:    oklch(52% 0.012 60);     /* metadata */
+      --stamp:        oklch(54% 0.180 28);     /* vermilion accent */
+      --stamp-deep:   oklch(44% 0.170 28);
+      --stamp-soft:   oklch(93% 0.045 30);     /* tag/tint background */
+      --ink-black:    oklch(15% 0.018 55);
+
+      --font-serif:   'Fraunces', 'Iowan Old Style', 'Apple Garamond', Georgia, serif;
+      --font-mono:    'JetBrains Mono', 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace;
+      --font-sans:    -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+
+      --r-sharp: 2px;
+      --r-soft: 4px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    [hidden] { display: none !important; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--paper);
+      color: var(--ink);
+      min-height: 100vh;
+      line-height: 1.6;
+      font-size: 15px;
+      font-variant-numeric: tabular-nums;
+      font-kerning: normal;
+      /* subtle paper grain via layered gradients, not a "gradient background" */
+      background-image:
+        radial-gradient(circle at 12% 8%, oklch(94% 0.018 75) 0%, transparent 38%),
+        radial-gradient(circle at 88% 92%, oklch(94% 0.018 75) 0%, transparent 42%);
+      background-attachment: fixed;
+    }
+
+    /* ───── Masthead ──────────────────────────────────────────── */
+    .masthead {
+      border-bottom: 3px double var(--rule-strong);
+      background: var(--paper);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .masthead-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 18px 32px 16px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+    }
+    .brand-mark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 38px;
+      background: var(--stamp);
+      color: var(--paper-raised);
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-size: 22px;
+      border-radius: 50%;
+      transform: rotate(-6deg);
+      box-shadow: 0 0 0 2px var(--paper), 0 0 0 3px var(--stamp);
+      flex-shrink: 0;
+      align-self: center;
+      letter-spacing: -0.02em;
+    }
+    .brand-text { display: flex; flex-direction: column; line-height: 1.1; }
+    .brand-title {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-size: 28px;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      font-variation-settings: 'opsz' 144, 'SOFT' 30;
+    }
+    .brand-sub {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-top: 4px;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex: 1;
+      justify-content: flex-end;
+      max-width: 540px;
+    }
+    .search-field {
+      position: relative;
+      flex: 1;
+      max-width: 320px;
+    }
+    .search-field::before {
+      content: '⌕';
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-55%);
+      color: var(--ink-faint);
+      font-size: 18px;
+      font-family: var(--font-serif);
+      pointer-events: none;
+    }
+    .search-input {
+      width: 100%;
+      background: var(--paper-raised);
+      border: 1px solid var(--rule);
+      border-bottom: 2px solid var(--ink);
+      border-radius: var(--r-sharp) var(--r-sharp) 0 0;
+      padding: 9px 12px 9px 34px;
+      color: var(--ink);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .search-input::placeholder { color: var(--ink-faint); font-style: italic; }
+    .search-input:focus { outline: none; border-color: var(--stamp); border-bottom-color: var(--stamp); }
+
+    .btn {
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      border-radius: var(--r-sharp);
+      transition: transform 0.08s ease, background 0.15s, color 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      line-height: 1;
+    }
+    .btn-primary {
+      background: var(--stamp);
+      color: var(--paper-raised);
+      border: 1px solid var(--stamp-deep);
+      padding: 10px 18px;
+      box-shadow: 2px 2px 0 var(--stamp-deep);
+    }
+    .btn-primary:hover { background: var(--stamp-deep); transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--stamp-deep); }
+    .btn-primary:active { transform: translate(2px, 2px); box-shadow: 0 0 0 var(--stamp-deep); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--ink);
+      border: 1px solid var(--rule-strong);
+      padding: 10px 18px;
+    }
+    .btn-ghost:hover { background: var(--paper-card); border-color: var(--ink); }
+    .btn-link {
+      background: transparent;
+      color: var(--ink-soft);
+      border: 1px solid var(--rule);
+      padding: 6px 12px;
+      font-size: 12px;
+      font-family: var(--font-mono);
+      letter-spacing: 0.04em;
+    }
+    .btn-link:hover { color: var(--stamp); border-color: var(--stamp); }
+    .btn-link.danger:hover { color: var(--stamp-deep); border-color: var(--stamp-deep); background: var(--stamp-soft); }
+
+    /* ───── Catalog drawer / category tabs ─────────────────────── */
+    .drawer {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 20px 32px 0;
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid var(--rule);
+    }
+    .drawer-label {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-right: 12px;
+    }
+    .drawer-tab {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      padding: 8px 14px 8px 0;
+      margin-right: 14px;
+      cursor: pointer;
+      color: var(--ink-soft);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.15s;
+      display: inline-flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+    .drawer-tab:hover { color: var(--ink); }
+    .drawer-tab.active { color: var(--stamp); border-bottom-color: var(--stamp); font-weight: 700; }
+    .drawer-tab .tab-count {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--ink-faint);
+      font-weight: 400;
+    }
+    .drawer-tab.active .tab-count { color: var(--stamp); }
+
+    /* ───── Archive ledger ─────────────────────────────────────── */
+    .ledger {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 28px 32px 80px;
+    }
+    .ledger-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 20px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .ledger-head h2 {
+      font-family: var(--font-serif);
+      font-weight: 500;
+      font-style: italic;
+      font-size: 20px;
+      color: var(--ink);
+      font-variation-settings: 'opsz' 144, 'SOFT' 50;
+    }
+    .ledger-meta {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: var(--ink-faint);
+      text-transform: uppercase;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+    }
+    .grid:empty { display: none; }
+
+    .card {
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      border-radius: var(--r-sharp);
+      padding: 22px 22px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      position: relative;
+      transition: background 0.15s, border-color 0.15s;
+      min-height: 200px;
+    }
+    .card:hover { background: var(--paper-card); border-color: var(--rule-strong); }
+    .card:hover .card-number { color: var(--stamp); }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .card-number {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      color: var(--ink-faint);
+      transition: color 0.15s;
+      text-transform: uppercase;
+    }
+    .card-date {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      letter-spacing: 0.04em;
+      color: var(--ink-faint);
+      white-space: nowrap;
+    }
+
+    .card-title {
+      font-family: var(--font-serif);
+      font-weight: 700;
+      font-size: 19px;
+      line-height: 1.25;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+      font-variation-settings: 'opsz' 96, 'SOFT' 40;
+      word-break: break-word;
+    }
+
+    .card-content {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      line-height: 1.65;
+      color: var(--ink-soft);
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 160px;
+      overflow: hidden;
+      position: relative;
+      flex: 1;
+      padding-left: 12px;
+      border-left: 2px solid var(--rule);
+    }
+    .card-content::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 28px;
+      background: linear-gradient(transparent, var(--paper));
+      pointer-events: none;
+    }
+    .card:hover .card-content::after { background: linear-gradient(transparent, var(--paper-card)); }
+
+    .card-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--stamp-deep);
+      background: var(--stamp-soft);
+      padding: 3px 8px;
+      border-radius: var(--r-sharp);
+      font-weight: 500;
+      line-height: 1.4;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 6px;
+      padding-top: 10px;
+      margin-top: auto;
+      border-top: 1px dashed var(--rule);
+    }
+    .card-actions .btn-link { flex: 1; text-align: center; justify-content: center; }
+    .card-clickable {
+      cursor: pointer;
+    }
+    .card-clickable:focus-visible {
+      outline: 2px solid var(--stamp);
+      outline-offset: -2px;
+    }
+
+    /* ───── Empty / loading states ─────────────────────────────── */
+    .state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 80px 24px;
+      background: transparent;
+    }
+    .state-mark {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-size: 56px;
+      color: var(--rule-strong);
+      line-height: 1;
+      margin-bottom: 18px;
+      font-variation-settings: 'opsz' 144, 'SOFT' 80;
+    }
+    .state-title {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-weight: 500;
+      font-size: 20px;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+    .state-desc {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--ink-faint);
+      letter-spacing: 0.04em;
+    }
+
+    /* ───── Modal / composition sheet ─────────────────────────── */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: oklch(20% 0.02 60 / 0.42);
+      display: none;
+      align-items: flex-start;
+      justify-content: center;
+      z-index: 100;
+      padding: 40px 20px;
+      overflow-y: auto;
+      animation: fade 0.18s ease;
+    }
+    .overlay.show { display: flex; }
+    @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+    .sheet {
+      background: var(--paper-raised);
+      border: 1px solid var(--rule-strong);
+      border-radius: var(--r-soft);
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 6px 6px 0 var(--rule-strong);
+      animation: rise 0.22s cubic-bezier(0.2, 0.9, 0.3, 1);
+    }
+    @keyframes rise { from { transform: translateY(12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    .sheet-masthead {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 24px;
+      border-bottom: 3px double var(--rule-strong);
+    }
+    .sheet-title {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-size: 22px;
+      color: var(--ink);
+      font-variation-settings: 'opsz' 144, 'SOFT' 40;
+      letter-spacing: -0.01em;
+    }
+    .sheet-close {
+      background: none;
+      border: 1px solid var(--rule);
+      color: var(--ink-soft);
+      width: 32px; height: 32px;
+      border-radius: var(--r-sharp);
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+      font-family: var(--font-serif);
+      transition: all 0.15s;
+    }
+    .sheet-close:hover { color: var(--stamp); border-color: var(--stamp); }
+
+    .sheet-body { padding: 24px; }
+
+    /* Detail meta strip (shown only in view/edit mode) */
+    .detail-meta {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      padding: 10px 24px;
+      border-bottom: 1px solid var(--rule);
+      background: var(--paper);
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+    }
+    .detail-meta .meta-key { color: var(--ink-faint); margin-right: 6px; }
+    .detail-meta .meta-val { color: var(--ink-soft); }
+    .detail-meta[hidden] { display: none; }
+
+    /* View-mode read-only display blocks (shown when not editing) */
+    .view-block {
+      padding: 4px 0 8px;
+    }
+    .view-block[hidden] { display: none; }
+    .view-title {
+      font-family: var(--font-serif);
+      font-weight: 700;
+      font-size: 22px;
+      line-height: 1.3;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+      font-variation-settings: 'opsz' 96, 'SOFT' 40;
+      word-break: break-word;
+    }
+    .view-content {
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      line-height: 1.75;
+      color: var(--ink);
+      white-space: pre-wrap;
+      word-break: break-word;
+      padding: 14px 16px;
+      border-left: 2px solid var(--stamp);
+      background: var(--paper);
+      border-radius: 0 var(--r-sharp) var(--r-sharp) 0;
+      min-height: 60px;
+    }
+    .view-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .view-tags .view-tags-label {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-right: 4px;
+    }
+
+    .field { margin-bottom: 22px; }
+    .field-label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    .field-label .req { color: var(--stamp); margin-left: 4px; }
+
+    .input, .textarea {
+      width: 100%;
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      border-bottom: 2px solid var(--ink);
+      border-radius: var(--r-sharp) var(--r-sharp) 0 0;
+      padding: 10px 14px;
+      color: var(--ink);
+      font-family: var(--font-sans);
+      font-size: 15px;
+      transition: border-color 0.15s;
+    }
+    .input::placeholder, .textarea::placeholder { color: var(--ink-faint); font-style: italic; }
+    .input:focus, .textarea:focus { outline: none; border-color: var(--stamp); border-bottom-color: var(--stamp); }
+
+    .textarea {
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      line-height: 1.7;
+      min-height: 180px;
+      resize: vertical;
+    }
+    .field-hint {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--ink-faint);
+      margin-top: 6px;
+      letter-spacing: 0.04em;
+    }
+    .field-hint kbd {
+      background: var(--paper-card);
+      border: 1px solid var(--rule);
+      border-radius: var(--r-sharp);
+      padding: 1px 5px;
+      font-family: inherit;
+      font-size: 10.5px;
+      color: var(--ink-soft);
+    }
+
+    .sheet-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 18px 24px;
+      border-top: 1px solid var(--rule);
+      background: var(--paper-card);
+    }
+
+    /* ───── Toast / stamp notification ─────────────────────────── */
+    .toast {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      background: var(--paper-raised);
+      color: var(--ink);
+      padding: 12px 18px 12px 14px;
+      border: 1px solid var(--ink);
+      border-left: 4px solid var(--stamp);
+      border-radius: var(--r-sharp);
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      letter-spacing: 0.04em;
+      box-shadow: 4px 4px 0 var(--ink-black);
+      opacity: 0;
+      transform: translate(8px, -8px) rotate(-1deg);
+      transition: all 0.25s cubic-bezier(0.2, 0.9, 0.3, 1);
+      pointer-events: none;
+      z-index: 200;
+      max-width: 320px;
+    }
+    .toast.show { opacity: 1; transform: translate(0, 0) rotate(-0.5deg); }
+    .toast.error { border-left-color: var(--stamp-deep); color: var(--stamp-deep); }
+
+    /* ───── Focus & a11y ───────────────────────────────────────── */
+    :focus-visible {
+      outline: 2px solid var(--stamp);
+      outline-offset: 2px;
+    }
+    .btn:focus-visible { outline-offset: 3px; }
+
+    /* ───── Responsive ─────────────────────────────────────────── */
+    @media (max-width: 720px) {
+      .masthead-inner { padding: 14px 18px; gap: 14px; }
+      .brand-title { font-size: 22px; }
+      .toolbar { max-width: 100%; }
+      .search-field { max-width: none; }
+      .drawer { padding: 14px 18px 0; }
+      .drawer-tab { margin-right: 10px; padding-right: 10px; font-size: 13px; }
+      .ledger { padding: 22px 18px 60px; }
+      .grid { grid-template-columns: 1fr; }
+      .sheet { box-shadow: 4px 4px 0 var(--rule-strong); }
+      .overlay { padding: 16px; align-items: flex-start; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Masthead -->
+  <header class="masthead">
+    <div class="masthead-inner">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">P</span>
+        <div class="brand-text">
+          <div class="brand-title">提示词档</div>
+          <div class="brand-sub">Prompt Archive · Vol. 01</div>
+        </div>
+      </div>
+      <div class="toolbar">
+        <div class="search-field">
+          <input type="text" class="search-input" id="search" placeholder="检索档案…" aria-label="搜索提示词" />
+        </div>
+        <button class="btn btn-primary" id="addBtn" aria-label="新增提示词">
+          <span aria-hidden="true" style="font-family: var(--font-serif); font-weight: 900; font-size: 16px; line-height: 1;">+</span>
+          新建条目
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Catalog drawer -->
+  <nav class="drawer" id="categories" aria-label="分类">
+    <span class="drawer-label">分类目录</span>
+    <button class="drawer-tab active" data-cat="">全部 <span class="tab-count">0</span></button>
+  </nav>
+
+  <!-- Archive ledger -->
+  <main class="ledger">
+    <div class="ledger-head">
+      <h2>馆藏目录</h2>
+      <div class="ledger-meta" id="ledgerMeta">— 条记录</div>
+    </div>
+
+    <div class="grid" id="grid" role="list">
+      <div class="state">
+        <div class="state-mark">¶</div>
+        <div class="state-title">载入档案中</div>
+        <div class="state-desc">正在整理卡片目录…</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Composition sheet (modal) -->
+  <div class="overlay" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="sheet">
+      <div class="sheet-masthead">
+        <div class="sheet-title" id="modalTitle">新建条目</div>
+        <button class="sheet-close" id="closeBtn" aria-label="关闭">×</button>
+      </div>
+      <div class="detail-meta" id="detailMeta" hidden>
+        <span><span class="meta-key">编号</span><span class="meta-val" id="metaNo">—</span></span>
+        <span><span class="meta-key">建立</span><span class="meta-val" id="metaCreated">—</span></span>
+        <span id="metaUpdatedWrap" hidden><span class="meta-key">修订</span><span class="meta-val" id="metaUpdated">—</span></span>
+      </div>
+      <div class="sheet-body">
+        <!-- Read-only view blocks (shown when viewing an existing entry without editing) -->
+        <div class="view-block" id="viewBlock" hidden>
+          <div class="field-label">标题</div>
+          <div class="view-title" id="viewTitle"></div>
+          <div class="field-label" style="margin-top:18px;">提示词内容</div>
+          <div class="view-content" id="viewContent"></div>
+          <div class="field-label" style="margin-top:18px;" id="viewTagsLabel">标签</div>
+          <div class="view-tags" id="viewTags"></div>
+        </div>
+
+        <!-- Editable fields (shown when creating or editing) -->
+        <div class="field" id="fieldTitle">
+          <label class="field-label" for="title">标题</label>
+          <input type="text" class="input" id="title" placeholder="为此条目命名…" />
+        </div>
+        <div class="field" id="fieldContent">
+          <label class="field-label" for="content">提示词内容<span class="req">*</span></label>
+          <textarea class="textarea" id="content" placeholder="在此录入或粘贴提示词原文…"></textarea>
+          <div class="field-hint"><kbd>Ctrl</kbd> + <kbd>Enter</kbd> 快速保存</div>
+        </div>
+        <div class="field" id="fieldTags">
+          <label class="field-label" for="tags">标签 · 以逗号分隔</label>
+          <input type="text" class="input" id="tags" placeholder="例如：写作, 翻译, 编程" />
+        </div>
+      </div>
+      <div class="sheet-footer">
+        <button class="btn btn-ghost" id="cancelBtn">取消</button>
+        <span style="flex:1"></span>
+        <button class="btn btn-ghost" id="editToggleBtn" hidden>编辑</button>
+        <button class="btn btn-primary" id="saveBtn">归档</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const API = '/api/prompts';
+    const $ = (id) => document.getElementById(id);
+
+    let allPrompts = [];
+    let activeCategory = '';
+    let searchQuery = '';
+
+    function showToast(msg, isError = false) {
+      const t = $('toast');
+      t.textContent = msg;
+      t.className = 'toast show' + (isError ? ' error' : '');
+      clearTimeout(t._timer);
+      t._timer = setTimeout(() => t.classList.remove('show'), 2600);
+    }
+
+    function formatDate(ts) {
+      const d = new Date(ts * 1000);
+      const pad = (n) => String(n).padStart(2, '0');
+      return `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())}`;
+    }
+
+    function padNum(n, w = 4) {
+      return String(n).padStart(w, '0');
+    }
+
+    function escapeHtml(s) {
+      const div = document.createElement('div');
+      div.textContent = s == null ? '' : String(s);
+      return div.innerHTML;
+    }
+
+    function getAllTags() {
+      const tagSet = new Set();
+      allPrompts.forEach(p => (p.tags || []).forEach(t => tagSet.add(t)));
+      return Array.from(tagSet).sort((a, b) => a.localeCompare(b, 'zh'));
+    }
+
+    function renderCategories() {
+      const container = $('categories');
+      const tags = getAllTags();
+      const allCount = allPrompts.length;
+      container.innerHTML = `<span class="drawer-label">分类目录</span>` +
+        `<button class="drawer-tab ${activeCategory === '' ? 'active' : ''}" data-cat="">全部 <span class="tab-count">${allCount}</span></button>` +
+        tags.map(t => {
+          const count = allPrompts.filter(p => (p.tags || []).includes(t)).length;
+          return `<button class="drawer-tab ${activeCategory === t ? 'active' : ''}" data-cat="${escapeHtml(t)}">${escapeHtml(t)} <span class="tab-count">${count}</span></button>`;
+        }).join('');
+
+      container.querySelectorAll('.drawer-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          activeCategory = tab.dataset.cat;
+          renderCategories();
+          renderGrid();
+        });
+      });
+    }
+
+    function getFilteredPrompts() {
+      let list = allPrompts;
+      if (activeCategory) {
+        list = list.filter(p => (p.tags || []).includes(activeCategory));
+      }
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        list = list.filter(p =>
+          (p.title || '').toLowerCase().includes(q) ||
+          (p.content || '').toLowerCase().includes(q) ||
+          (p.tags || []).some(t => t.toLowerCase().includes(q))
+        );
+      }
+      return list;
+    }
+
+    function renderGrid() {
+      const grid = $('grid');
+      const list = getFilteredPrompts();
+      const total = list.length;
+      $('ledgerMeta').textContent = `${padNum(total)} 条记录`;
+
+      if (total === 0) {
+        grid.innerHTML = allPrompts.length === 0
+          ? `<div class="state">
+              <div class="state-mark">¶</div>
+              <div class="state-title">档案尚空</div>
+              <div class="state-desc">点击右上「新建条目」开始收录第一条提示词</div>
+            </div>`
+          : `<div class="state">
+              <div class="state-mark">⌕</div>
+              <div class="state-title">无匹配条目</div>
+              <div class="state-desc">尝试切换分类目录或调整检索词</div>
+            </div>`;
+        return;
+      }
+
+      // Show newest first; number from the top of the visible list
+      const ordered = list.slice().reverse();
+      grid.innerHTML = ordered.map((p, i) => `
+        <article class="card card-clickable" role="listitem" tabindex="0" data-id="${p.id}" onclick="openDetail('${p.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openDetail('${p.id}')}">
+          <div class="card-top">
+            <span class="card-number">No. ${padNum(i + 1)}</span>
+            <span class="card-date">${formatDate(p.created_at)}</span>
+          </div>
+          <h3 class="card-title">${escapeHtml(p.title || '（无题）')}</h3>
+          <div class="card-content">${escapeHtml(p.content)}</div>
+          ${(p.tags || []).length ? `<div class="card-tags">${p.tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
+          <div class="card-actions" onclick="event.stopPropagation()">
+            <button class="btn-link" onclick="copyPrompt('${p.id}')">誊抄</button>
+            <button class="btn-link danger" onclick="deletePrompt('${p.id}')">销毁</button>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    function render() {
+      renderCategories();
+      renderGrid();
+    }
+
+    async function loadPrompts() {
+      try {
+        const res = await fetch(API);
+        const data = await res.json();
+        allPrompts = data.prompts || [];
+        render();
+      } catch (e) {
+        $('grid').innerHTML = `<div class="state"><div class="state-mark">!</div><div class="state-title">载入失败</div><div class="state-desc">档案服务未响应</div></div>`;
+      }
+    }
+
+    // Modal modes: 'create' | 'view' | 'edit'
+    let modalMode = 'create';
+    let editingId = null;
+
+    function formatDateTime(ts) {
+      const d = new Date(ts * 1000);
+      const pad = (n) => String(n).padStart(2, '0');
+      return `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+
+    function setModalMode(mode) {
+      modalMode = mode;
+      const isCreate = mode === 'create';
+      const isView = mode === 'view';
+      const isEdit = mode === 'edit';
+
+      // Field visibility
+      $('viewBlock').hidden = !(isView);
+      $('fieldTitle').hidden = isView;
+      $('fieldContent').hidden = isView;
+      $('fieldTags').hidden = isView;
+      $('detailMeta').hidden = isCreate;
+
+      // Button labels & visibility
+      $('editToggleBtn').hidden = !isView;
+      $('editToggleBtn').textContent = '编辑';
+      $('saveBtn').hidden = isView;
+      $('saveBtn').textContent = isCreate ? '归档' : '保存修改';
+      $('cancelBtn').textContent = isView ? '关闭' : '取消';
+      $('modalTitle').textContent = isCreate ? '新建条目' : (isView ? '条目详情' : '修订条目');
+    }
+
+    function openCreateModal() {
+      editingId = null;
+      $('title').value = '';
+      $('content').value = '';
+      $('tags').value = '';
+      setModalMode('create');
+      $('modal').classList.add('show');
+      document.body.style.overflow = 'hidden';
+      setTimeout(() => $('title').focus(), 120);
+    }
+
+    window.openDetail = function(id) {
+      const p = allPrompts.find(x => x.id === id);
+      if (!p) return;
+      editingId = id;
+      $('title').value = p.title || '';
+      $('content').value = p.content || '';
+      $('tags').value = (p.tags || []).join(', ');
+      $('metaNo').textContent = 'No. ' + padNum(allPrompts.length - allPrompts.indexOf(p));
+      $('metaCreated').textContent = formatDateTime(p.created_at);
+      if (p.updated_at) {
+        $('metaUpdated').textContent = formatDateTime(p.updated_at);
+        $('metaUpdatedWrap').hidden = false;
+      } else {
+        $('metaUpdatedWrap').hidden = true;
+      }
+      $('viewTitle').textContent = p.title || '（无题）';
+      $('viewContent').textContent = p.content || '';
+      const tags = p.tags || [];
+      if (tags.length) {
+        $('viewTagsLabel').hidden = false;
+        $('viewTags').innerHTML = tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('');
+      } else {
+        $('viewTagsLabel').hidden = true;
+        $('viewTags').innerHTML = '';
+      }
+      setModalMode('view');
+      $('modal').classList.add('show');
+      document.body.style.overflow = 'hidden';
+    };
+
+    function closeModal() {
+      $('modal').classList.remove('show');
+      document.body.style.overflow = '';
+      editingId = null;
+      modalMode = 'create';
+    }
+
+    async function savePrompt() {
+      const content = $('content').value.trim();
+      if (!content) {
+        showToast('请录入提示词内容', true);
+        $('content').focus();
+        return;
+      }
+      const title = $('title').value.trim();
+      const tags = $('tags').value.split(',').map(t => t.trim()).filter(Boolean);
+
+      const btn = $('saveBtn');
+      btn.disabled = true;
+      btn.textContent = '保存中…';
+
+      try {
+        let res, data;
+        if (modalMode === 'edit' && editingId) {
+          res = await fetch(`${API}/${editingId}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, content, tags }),
+          });
+          if (!res.ok) throw new Error('update failed');
+          data = await res.json();
+          const idx = allPrompts.findIndex(p => p.id === editingId);
+          if (idx >= 0) allPrompts[idx] = data.prompt;
+          showToast('已修订');
+          // After saving an edit, return to view mode showing the updated entry
+          openDetail(data.prompt.id);
+          render();
+        } else {
+          res = await fetch(API, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, content, tags }),
+          });
+          if (!res.ok) throw new Error('save failed');
+          data = await res.json();
+          allPrompts.push(data.prompt);
+          render();
+          showToast('已归档');
+          closeModal();
+        }
+      } catch (e) {
+        showToast('保存失败，请重试', true);
+      } finally {
+        // Only reset button state if we're still in a saving mode
+        // (i.e., save failed or we stayed). If openDetail switched us
+        // to view mode, leave the button alone.
+        if (modalMode === 'edit' || modalMode === 'create') {
+          btn.disabled = false;
+          btn.textContent = modalMode === 'edit' ? '保存修改' : '归档';
+        }
+      }
+    }
+
+    window.copyPrompt = async (id) => {
+      const p = allPrompts.find(x => x.id === id);
+      if (!p) return;
+      try {
+        await navigator.clipboard.writeText(p.content);
+        showToast('已誊抄至剪贴板');
+      } catch (e) {
+        // Fallback for non-secure contexts
+        const ta = document.createElement('textarea');
+        ta.value = p.content;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); showToast('已誊抄至剪贴板'); }
+        catch (_) { showToast('誊抄失败', true); }
+        document.body.removeChild(ta);
+      }
+    };
+
+    window.deletePrompt = async (id) => {
+      if (!confirm('确定销毁此条目？此操作不可撤销。')) return;
+      try {
+        const res = await fetch(`${API}/${id}`, { method: 'DELETE' });
+        if (!res.ok) throw new Error('delete failed');
+        allPrompts = allPrompts.filter(p => p.id !== id);
+        render();
+        showToast('已销毁');
+      } catch (e) {
+        showToast('销毁失败', true);
+      }
+    };
+
+    // Events
+    $('addBtn').addEventListener('click', openCreateModal);
+    $('closeBtn').addEventListener('click', closeModal);
+    $('cancelBtn').addEventListener('click', closeModal);
+    $('editToggleBtn').addEventListener('click', () => {
+      setModalMode('edit');
+      setTimeout(() => $('title').focus(), 50);
+    });
+    $('saveBtn').addEventListener('click', savePrompt);
+    $('modal').addEventListener('click', (e) => {
+      if (e.target === $('modal')) closeModal();
+    });
+    $('search').addEventListener('input', (e) => {
+      searchQuery = e.target.value.trim();
+      renderGrid();
+    });
+    document.addEventListener('keydown', (e) => {
+      const open = $('modal').classList.contains('show');
+      if (e.key === 'Escape' && open) closeModal();
+      if (open && (e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        savePrompt();
+      }
+      // Quick focus search with "/"
+      if (e.key === '/' && !open && document.activeElement !== $('search') && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+        $('search').focus();
+      }
+    });
+
+    loadPrompts();
+  </script>
+</body>
+</html>
