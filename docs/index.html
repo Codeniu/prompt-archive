@@ -1133,7 +1133,19 @@
       if (res.status === 401) throw new Error('Token 无效或已过期（401）');
       if (res.status === 403) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(`访问被拒（403）${data.message ? '：' + data.message : ''}`);
+        const msg = data.message || '';
+        const isRateLimit = /rate limit/i.test(msg);
+        if (isRateLimit && readOnly()) {
+          const err = new Error('GitHub API 限流（未鉴权每小时仅 60 次）。点右上 ⚙ 配置 Token 后可提升至 5000 次/小时。');
+          err.rateLimited = true;
+          throw err;
+        }
+        if (isRateLimit) {
+          const err = new Error('GitHub API 限流，请稍后再试');
+          err.rateLimited = true;
+          throw err;
+        }
+        throw new Error(`访问被拒（403）${msg ? '：' + msg : ''}`);
       }
       if (!res.ok) throw new Error(`加载失败（${res.status}）`);
       const issues = await res.json();
@@ -1450,9 +1462,21 @@
           showToast('只读模式 · 点 ⚙ 配置 Token 后可编辑', false);
         }
       } catch (e) {
-        // If read-only fetch failed, show the appropriate empty state.
+        // Read-only mode hit a wall (usually rate-limit). Offer token config.
         if (!isConfigured()) {
-          render();
+          if (e.rateLimited) {
+            $('grid').innerHTML = `<div class="state">
+              <div class="state-mark">!</div>
+              <div class="state-title">GitHub 限流</div>
+              <div class="state-desc error">${escapeHtml(e.message)}</div>
+              <div class="state-actions">
+                <button class="btn btn-primary" onclick="openSettings()">配置 Token</button>
+                <button class="btn btn-ghost" onclick="loadPrompts()">重试</button>
+              </div>
+            </div>`;
+          } else {
+            render();
+          }
           return;
         }
         $('grid').innerHTML = `<div class="state">
