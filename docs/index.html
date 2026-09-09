@@ -1,1 +1,1324 @@
-test placeholder
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>提示词档 · Prompt Archive</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,400;9..144,500;9..144,700;9..144,900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --paper:        oklch(96% 0.014 80);
+      --paper-card:   oklch(98.5% 0.008 80);
+      --paper-raised: oklch(99% 0.004 80);
+      --rule:         oklch(84% 0.012 70);
+      --rule-strong:  oklch(70% 0.014 65);
+      --ink:          oklch(22% 0.020 55);
+      --ink-soft:     oklch(38% 0.014 60);
+      --ink-faint:    oklch(52% 0.012 60);
+      --stamp:        oklch(54% 0.180 28);
+      --stamp-deep:   oklch(44% 0.170 28);
+      --stamp-soft:   oklch(93% 0.045 30);
+      --ink-black:    oklch(15% 0.018 55);
+      --warn:         oklch(60% 0.150 70);
+
+      --font-serif:   'Fraunces', 'Iowan Old Style', 'Apple Garamond', Georgia, serif;
+      --font-mono:    'JetBrains Mono', 'SF Mono', 'Cascadia Mono', Menlo, Consolas, monospace;
+      --font-sans:    -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+
+      --r-sharp: 2px;
+      --r-soft: 4px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    [hidden] { display: none !important; }
+    html { -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: var(--font-sans);
+      background: var(--paper);
+      color: var(--ink);
+      min-height: 100vh;
+      line-height: 1.6;
+      font-size: 15px;
+      font-variant-numeric: tabular-nums;
+      font-kerning: normal;
+      background-image:
+        radial-gradient(circle at 12% 8%, oklch(94% 0.018 75) 0%, transparent 38%),
+        radial-gradient(circle at 88% 92%, oklch(94% 0.018 75) 0%, transparent 42%);
+      background-attachment: fixed;
+    }
+
+    /* ───── Masthead ──────────────────────────────────────────── */
+    .masthead {
+      border-bottom: 3px double var(--rule-strong);
+      background: var(--paper);
+      position: sticky;
+      top: 0;
+      z-index: 20;
+    }
+    .masthead-inner {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 18px 32px 16px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+    .brand { display: flex; align-items: baseline; gap: 14px; }
+    .brand-mark {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px; height: 38px;
+      background: var(--stamp);
+      color: var(--paper-raised);
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-size: 22px;
+      border-radius: 50%;
+      transform: rotate(-6deg);
+      box-shadow: 0 0 0 2px var(--paper), 0 0 0 3px var(--stamp);
+      flex-shrink: 0;
+      align-self: center;
+      letter-spacing: -0.02em;
+    }
+    .brand-text { display: flex; flex-direction: column; line-height: 1.1; }
+    .brand-title {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-size: 28px;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      font-variation-settings: 'opsz' 144, 'SOFT' 30;
+    }
+    .brand-sub {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-top: 4px;
+    }
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex: 1;
+      justify-content: flex-end;
+      max-width: 560px;
+    }
+    .search-field { position: relative; flex: 1; max-width: 320px; }
+    .search-field::before {
+      content: '⌕';
+      position: absolute;
+      left: 12px; top: 50%;
+      transform: translateY(-55%);
+      color: var(--ink-faint);
+      font-size: 18px;
+      font-family: var(--font-serif);
+      pointer-events: none;
+    }
+    .search-input {
+      width: 100%;
+      background: var(--paper-raised);
+      border: 1px solid var(--rule);
+      border-bottom: 2px solid var(--ink);
+      border-radius: var(--r-sharp) var(--r-sharp) 0 0;
+      padding: 9px 12px 9px 34px;
+      color: var(--ink);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .search-input::placeholder { color: var(--ink-faint); font-style: italic; }
+    .search-input:focus { outline: none; border-color: var(--stamp); border-bottom-color: var(--stamp); }
+
+    .btn {
+      font-family: var(--font-sans);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      border-radius: var(--r-sharp);
+      transition: transform 0.08s ease, background 0.15s, color 0.15s, border-color 0.15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+      line-height: 1;
+    }
+    .btn-primary {
+      background: var(--stamp);
+      color: var(--paper-raised);
+      border: 1px solid var(--stamp-deep);
+      padding: 10px 18px;
+      box-shadow: 2px 2px 0 var(--stamp-deep);
+    }
+    .btn-primary:hover { background: var(--stamp-deep); transform: translate(1px, 1px); box-shadow: 1px 1px 0 var(--stamp-deep); }
+    .btn-primary:active { transform: translate(2px, 2px); box-shadow: 0 0 0 var(--stamp-deep); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--ink);
+      border: 1px solid var(--rule-strong);
+      padding: 10px 18px;
+    }
+    .btn-ghost:hover { background: var(--paper-card); border-color: var(--ink); }
+    .btn-icon {
+      background: transparent;
+      border: 1px solid var(--rule);
+      color: var(--ink-soft);
+      padding: 8px 12px;
+      font-size: 13px;
+      border-radius: var(--r-sharp);
+    }
+    .btn-icon:hover { color: var(--stamp); border-color: var(--stamp); }
+    .btn-link {
+      background: transparent;
+      color: var(--ink-soft);
+      border: 1px solid var(--rule);
+      padding: 6px 12px;
+      font-size: 12px;
+      font-family: var(--font-mono);
+      letter-spacing: 0.04em;
+    }
+    .btn-link:hover { color: var(--stamp); border-color: var(--stamp); }
+    .btn-link.danger:hover { color: var(--stamp-deep); border-color: var(--stamp-deep); background: var(--stamp-soft); }
+
+    /* ───── Catalog drawer ─────────────────────────────────────── */
+    .drawer {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 20px 32px 0;
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      flex-wrap: wrap;
+      border-bottom: 1px solid var(--rule);
+    }
+    .drawer-label {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-right: 12px;
+    }
+    .drawer-tab {
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      padding: 8px 14px 8px 0;
+      margin-right: 14px;
+      cursor: pointer;
+      color: var(--ink-soft);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      font-weight: 500;
+      transition: color 0.15s;
+      display: inline-flex;
+      align-items: baseline;
+      gap: 8px;
+    }
+    .drawer-tab:hover { color: var(--ink); }
+    .drawer-tab.active { color: var(--stamp); border-bottom-color: var(--stamp); font-weight: 700; }
+    .drawer-tab .tab-count {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--ink-faint);
+      font-weight: 400;
+    }
+    .drawer-tab.active .tab-count { color: var(--stamp); }
+
+    /* ───── Ledger ─────────────────────────────────────────────── */
+    .ledger {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 28px 32px 80px;
+    }
+    .ledger-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 20px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .ledger-head h2 {
+      font-family: var(--font-serif);
+      font-weight: 500;
+      font-style: italic;
+      font-size: 20px;
+      color: var(--ink);
+      font-variation-settings: 'opsz' 144, 'SOFT' 50;
+    }
+    .ledger-meta {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: var(--ink-faint);
+      text-transform: uppercase;
+    }
+    .ledger-meta .repo-link {
+      color: var(--ink-soft);
+      text-decoration: none;
+      border-bottom: 1px dotted var(--rule-strong);
+      margin-left: 8px;
+    }
+    .ledger-meta .repo-link:hover { color: var(--stamp); border-color: var(--stamp); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+    }
+    .grid:empty { display: none; }
+
+    .card {
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      border-radius: var(--r-sharp);
+      padding: 22px 22px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      position: relative;
+      transition: background 0.15s, border-color 0.15s;
+      min-height: 200px;
+    }
+    .card:hover { background: var(--paper-card); border-color: var(--rule-strong); }
+    .card:hover .card-number { color: var(--stamp); }
+    .card-clickable { cursor: pointer; }
+    .card-clickable:focus-visible { outline: 2px solid var(--stamp); outline-offset: -2px; }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--rule);
+    }
+    .card-number {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      color: var(--ink-faint);
+      transition: color 0.15s;
+      text-transform: uppercase;
+    }
+    .card-date {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      letter-spacing: 0.04em;
+      color: var(--ink-faint);
+      white-space: nowrap;
+    }
+    .card-title {
+      font-family: var(--font-serif);
+      font-weight: 700;
+      font-size: 19px;
+      line-height: 1.25;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+      font-variation-settings: 'opsz' 96, 'SOFT' 40;
+      word-break: break-word;
+    }
+    .card-content {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      line-height: 1.65;
+      color: var(--ink-soft);
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 160px;
+      overflow: hidden;
+      position: relative;
+      flex: 1;
+      padding-left: 12px;
+      border-left: 2px solid var(--rule);
+    }
+    .card-content::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 28px;
+      background: linear-gradient(transparent, var(--paper));
+      pointer-events: none;
+    }
+    .card:hover .card-content::after { background: linear-gradient(transparent, var(--paper-card)); }
+
+    .card-tags { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+    .tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--stamp-deep);
+      background: var(--stamp-soft);
+      padding: 3px 8px;
+      border-radius: var(--r-sharp);
+      font-weight: 500;
+      line-height: 1.4;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 6px;
+      padding-top: 10px;
+      margin-top: auto;
+      border-top: 1px dashed var(--rule);
+    }
+    .card-actions .btn-link { flex: 1; text-align: center; justify-content: center; }
+
+    /* ───── Empty / loading / error states ────────────────────── */
+    .state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 80px 24px;
+      background: transparent;
+    }
+    .state-mark {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-size: 56px;
+      color: var(--rule-strong);
+      line-height: 1;
+      margin-bottom: 18px;
+      font-variation-settings: 'opsz' 144, 'SOFT' 80;
+    }
+    .state-title {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-weight: 500;
+      font-size: 20px;
+      color: var(--ink);
+      margin-bottom: 6px;
+    }
+    .state-desc {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--ink-faint);
+      letter-spacing: 0.04em;
+    }
+    .state-desc.error { color: var(--stamp-deep); }
+    .state-actions { margin-top: 18px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+    /* ───── Modal / composition sheet ─────────────────────────── */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: oklch(20% 0.02 60 / 0.42);
+      display: none;
+      align-items: flex-start;
+      justify-content: center;
+      z-index: 100;
+      padding: 40px 20px;
+      overflow-y: auto;
+      animation: fade 0.18s ease;
+    }
+    .overlay.show { display: flex; }
+    @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+
+    .sheet {
+      background: var(--paper-raised);
+      border: 1px solid var(--rule-strong);
+      border-radius: var(--r-soft);
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 6px 6px 0 var(--rule-strong);
+      animation: rise 0.22s cubic-bezier(0.2, 0.9, 0.3, 1);
+    }
+    @keyframes rise { from { transform: translateY(12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    .sheet-masthead {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 18px 24px;
+      border-bottom: 3px double var(--rule-strong);
+    }
+    .sheet-title {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-size: 22px;
+      color: var(--ink);
+      font-variation-settings: 'opsz' 144, 'SOFT' 40;
+      letter-spacing: -0.01em;
+    }
+    .sheet-close {
+      background: none;
+      border: 1px solid var(--rule);
+      color: var(--ink-soft);
+      width: 32px; height: 32px;
+      border-radius: var(--r-sharp);
+      font-size: 18px;
+      line-height: 1;
+      cursor: pointer;
+      font-family: var(--font-serif);
+      transition: all 0.15s;
+    }
+    .sheet-close:hover { color: var(--stamp); border-color: var(--stamp); }
+
+    .sheet-body { padding: 24px; }
+
+    .detail-meta {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      padding: 10px 24px;
+      border-bottom: 1px solid var(--rule);
+      background: var(--paper);
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+    }
+    .detail-meta .meta-key { color: var(--ink-faint); margin-right: 6px; }
+    .detail-meta .meta-val { color: var(--ink-soft); }
+    .detail-meta .meta-val a { color: var(--ink-soft); text-decoration: none; border-bottom: 1px dotted var(--rule-strong); }
+    .detail-meta .meta-val a:hover { color: var(--stamp); border-color: var(--stamp); }
+
+    .view-block { padding: 4px 0 8px; }
+    .view-title {
+      font-family: var(--font-serif);
+      font-weight: 700;
+      font-size: 22px;
+      line-height: 1.3;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+      font-variation-settings: 'opsz' 96, 'SOFT' 40;
+      word-break: break-word;
+    }
+    .view-content {
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      line-height: 1.75;
+      color: var(--ink);
+      white-space: pre-wrap;
+      word-break: break-word;
+      padding: 14px 16px;
+      border-left: 2px solid var(--stamp);
+      background: var(--paper);
+      border-radius: 0 var(--r-sharp) var(--r-sharp) 0;
+      min-height: 60px;
+    }
+    .view-tags { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+    .view-tags .view-tags-label {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-right: 4px;
+    }
+
+    .field { margin-bottom: 22px; }
+    .field-label {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    .field-label .req { color: var(--stamp); margin-left: 4px; }
+    .field-label .hint-inline {
+      text-transform: none;
+      letter-spacing: 0.02em;
+      color: var(--ink-faint);
+      margin-left: 8px;
+      font-weight: 400;
+    }
+
+    .input, .textarea {
+      width: 100%;
+      background: var(--paper);
+      border: 1px solid var(--rule);
+      border-bottom: 2px solid var(--ink);
+      border-radius: var(--r-sharp) var(--r-sharp) 0 0;
+      padding: 10px 14px;
+      color: var(--ink);
+      font-family: var(--font-sans);
+      font-size: 15px;
+      transition: border-color 0.15s;
+    }
+    .input::placeholder, .textarea::placeholder { color: var(--ink-faint); font-style: italic; }
+    .input:focus, .textarea:focus { outline: none; border-color: var(--stamp); border-bottom-color: var(--stamp); }
+
+    .textarea {
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      line-height: 1.7;
+      min-height: 180px;
+      resize: vertical;
+    }
+    .field-hint {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--ink-faint);
+      margin-top: 6px;
+      letter-spacing: 0.04em;
+    }
+    .field-hint kbd {
+      background: var(--paper-card);
+      border: 1px solid var(--rule);
+      border-radius: var(--r-sharp);
+      padding: 1px 5px;
+      font-family: inherit;
+      font-size: 10.5px;
+      color: var(--ink-soft);
+    }
+    .field-warn {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--warn);
+      margin-top: 6px;
+      letter-spacing: 0.04em;
+      line-height: 1.5;
+    }
+
+    .sheet-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 18px 24px;
+      border-top: 1px solid var(--rule);
+      background: var(--paper-card);
+    }
+
+    /* ───── Toast ──────────────────────────────────────────────── */
+    .toast {
+      position: fixed;
+      top: 24px;
+      right: 24px;
+      background: var(--paper-raised);
+      color: var(--ink);
+      padding: 12px 18px 12px 14px;
+      border: 1px solid var(--ink);
+      border-left: 4px solid var(--stamp);
+      border-radius: var(--r-sharp);
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      letter-spacing: 0.04em;
+      box-shadow: 4px 4px 0 var(--ink-black);
+      opacity: 0;
+      transform: translate(8px, -8px) rotate(-1deg);
+      transition: all 0.25s cubic-bezier(0.2, 0.9, 0.3, 1);
+      pointer-events: none;
+      z-index: 200;
+      max-width: 320px;
+    }
+    .toast.show { opacity: 1; transform: translate(0, 0) rotate(-0.5deg); }
+    .toast.error { border-left-color: var(--stamp-deep); color: var(--stamp-deep); }
+
+    :focus-visible { outline: 2px solid var(--stamp); outline-offset: 2px; }
+    .btn:focus-visible { outline-offset: 3px; }
+
+    @media (max-width: 720px) {
+      .masthead-inner { padding: 14px 18px; gap: 14px; }
+      .brand-title { font-size: 22px; }
+      .toolbar { max-width: 100%; }
+      .search-field { max-width: none; }
+      .drawer { padding: 14px 18px 0; }
+      .drawer-tab { margin-right: 10px; padding-right: 10px; font-size: 13px; }
+      .ledger { padding: 22px 18px 60px; }
+      .grid { grid-template-columns: 1fr; }
+      .sheet { box-shadow: 4px 4px 0 var(--rule-strong); }
+      .overlay { padding: 16px; align-items: flex-start; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Masthead -->
+  <header class="masthead">
+    <div class="masthead-inner">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">P</span>
+        <div class="brand-text">
+          <div class="brand-title">提示词档</div>
+          <div class="brand-sub">Prompt Archive · GitHub</div>
+        </div>
+      </div>
+      <div class="toolbar">
+        <div class="search-field">
+          <input type="text" class="search-input" id="search" placeholder="检索档案…" aria-label="搜索提示词" />
+        </div>
+        <button class="btn btn-icon" id="settingsBtn" aria-label="设置" title="设置 GitHub 仓库">⚙</button>
+        <button class="btn btn-primary" id="addBtn" aria-label="新增提示词">
+          <span aria-hidden="true" style="font-family: var(--font-serif); font-weight: 900; font-size: 16px; line-height: 1;">+</span>
+          新建条目
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Catalog drawer -->
+  <nav class="drawer" id="categories" aria-label="分类">
+    <span class="drawer-label">分类目录</span>
+    <button class="drawer-tab active" data-cat="">全部 <span class="tab-count">0</span></button>
+  </nav>
+
+  <!-- Archive ledger -->
+  <main class="ledger">
+    <div class="ledger-head">
+      <h2>馆藏目录</h2>
+      <div class="ledger-meta" id="ledgerMeta">— 条记录</div>
+    </div>
+
+    <div class="grid" id="grid" role="list">
+      <div class="state">
+        <div class="state-mark">¶</div>
+        <div class="state-title">载入档案中</div>
+        <div class="state-desc">正在整理卡片目录…</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Composition sheet (prompt modal: create / view / edit) -->
+  <div class="overlay" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="sheet">
+      <div class="sheet-masthead">
+        <div class="sheet-title" id="modalTitle">新建条目</div>
+        <button class="sheet-close" id="closeBtn" aria-label="关闭">×</button>
+      </div>
+      <div class="detail-meta" id="detailMeta" hidden>
+        <span><span class="meta-key">编号</span><span class="meta-val" id="metaNo">—</span></span>
+        <span><span class="meta-key">建立</span><span class="meta-val" id="metaCreated">—</span></span>
+        <span id="metaUpdatedWrap" hidden><span class="meta-key">修订</span><span class="meta-val" id="metaUpdated">—</span></span>
+        <span id="metaIssueWrap" hidden><span class="meta-key">原始</span><span class="meta-val"><a id="metaIssueLink" href="#" target="_blank" rel="noopener">查看 issue</a></span></span>
+      </div>
+      <div class="sheet-body">
+        <div class="view-block" id="viewBlock" hidden>
+          <div class="field-label">标题</div>
+          <div class="view-title" id="viewTitle"></div>
+          <div class="field-label" style="margin-top:18px;">提示词内容</div>
+          <div class="view-content" id="viewContent"></div>
+          <div class="field-label" style="margin-top:18px;" id="viewTagsLabel">标签</div>
+          <div class="view-tags" id="viewTags"></div>
+        </div>
+
+        <div class="field" id="fieldTitle">
+          <label class="field-label" for="title">标题</label>
+          <input type="text" class="input" id="title" placeholder="为此条目命名…" />
+        </div>
+        <div class="field" id="fieldContent">
+          <label class="field-label" for="content">提示词内容<span class="req">*</span></label>
+          <textarea class="textarea" id="content" placeholder="在此录入或粘贴提示词原文…"></textarea>
+          <div class="field-hint"><kbd>Ctrl</kbd> + <kbd>Enter</kbd> 快速保存</div>
+        </div>
+        <div class="field" id="fieldTags">
+          <label class="field-label" for="tags">标签 · 以逗号分隔</label>
+          <input type="text" class="input" id="tags" placeholder="例如：写作, 翻译, 编程" />
+        </div>
+      </div>
+      <div class="sheet-footer">
+        <button class="btn btn-ghost" id="cancelBtn">取消</button>
+        <span style="flex:1"></span>
+        <button class="btn btn-ghost" id="editToggleBtn" hidden>编辑</button>
+        <button class="btn btn-primary" id="saveBtn">归档</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings modal -->
+  <div class="overlay" id="settingsModal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+    <div class="sheet">
+      <div class="sheet-masthead">
+        <div class="sheet-title" id="settingsTitle">仓库设置</div>
+        <button class="sheet-close" id="settingsCloseBtn" aria-label="关闭">×</button>
+      </div>
+      <div class="sheet-body">
+        <div class="field">
+          <label class="field-label" for="ghOwner">GitHub 用户名 / 组织<span class="req">*</span></label>
+          <input type="text" class="input" id="ghOwner" placeholder="例如：octocat" autocomplete="off" />
+        </div>
+        <div class="field">
+          <label class="field-label" for="ghRepo">仓库名<span class="req">*</span></label>
+          <input type="text" class="input" id="ghRepo" placeholder="例如：prompt-archive" autocomplete="off" />
+          <div class="field-hint">仓库需开启 Issues 功能（默认开启）</div>
+        </div>
+        <div class="field">
+          <label class="field-label" for="ghToken">Personal Access Token<span class="req">*</span></label>
+          <input type="password" class="input" id="ghToken" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off" />
+          <div class="field-warn">⚠ Token 仅存于本机 localStorage，用于调用 GitHub API。公开仓库选 <code>public_repo</code>；私有仓库选 <code>repo</code>。请勿在公共设备保存。</div>
+          <div class="field-hint">没有 Token？<a href="https://github.com/settings/tokens/new?scopes=public_repo" target="_blank" rel="noopener">点此创建</a>（建议勾选 public_repo）</div>
+        </div>
+        <div class="field">
+          <label class="field-label">连接状态</label>
+          <div id="connStatus" class="field-hint" style="margin-top:0;">未测试</div>
+        </div>
+      </div>
+      <div class="sheet-footer">
+        <button class="btn btn-ghost" id="testConnBtn">测试连接</button>
+        <button class="btn btn-primary" id="saveSettingsBtn">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    'use strict';
+    const $ = (id) => document.getElementById(id);
+
+    // ───── Config (stored in localStorage) ──────────────────────
+    const CFG_KEYS = { owner: 'pa_gh_owner', repo: 'pa_gh_repo', token: 'pa_gh_token' };
+    const cfg = {
+      owner: localStorage.getItem(CFG_KEYS.owner) || '',
+      repo:  localStorage.getItem(CFG_KEYS.repo) || '',
+      token: localStorage.getItem(CFG_KEYS.token) || '',
+    };
+
+    function isConfigured() {
+      return !!(cfg.owner && cfg.repo && cfg.token);
+    }
+
+    function ghBase() {
+      return `https://api.github.com/repos/${cfg.owner}/${cfg.repo}`;
+    }
+    function ghHeaders(extra = {}) {
+      return Object.assign({
+        'Authorization': `Bearer ${cfg.token}`,
+        'Accept': 'application/vnd.github+json',
+        'X-GitHub-Api-Version': '2022-11-28',
+      }, extra);
+    }
+
+    // ───── State ────────────────────────────────────────────────
+    let allPrompts = [];      // each: { number, title, body, labels, state, created_at, updated_at, html_url }
+    let activeCategory = '';
+    let searchQuery = '';
+    let modalMode = 'create'; // 'create' | 'view' | 'edit'
+    let editingNumber = null;
+
+    // ───── Helpers ──────────────────────────────────────────────
+    function showToast(msg, isError = false) {
+      const t = $('toast');
+      t.textContent = msg;
+      t.className = 'toast show' + (isError ? ' error' : '');
+      clearTimeout(t._timer);
+      t._timer = setTimeout(() => t.classList.remove('show'), 2800);
+    }
+
+    function formatDate(ts) {
+      if (!ts) return '—';
+      const d = ts instanceof Date ? ts : new Date(ts);
+      const pad = (n) => String(n).padStart(2, '0');
+      return `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())}`;
+    }
+    function formatDateTime(ts) {
+      if (!ts) return '—';
+      const d = ts instanceof Date ? ts : new Date(ts);
+      const pad = (n) => String(n).padStart(2, '0');
+      return `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+    function padNum(n, w = 4) { return String(n).padStart(w, '0'); }
+
+    function escapeHtml(s) {
+      const div = document.createElement('div');
+      div.textContent = s == null ? '' : String(s);
+      return div.innerHTML;
+    }
+
+    function labelsToTags(labels) {
+      return (labels || [])
+        .map(l => (typeof l === 'string' ? l : l.name))
+        .filter(n => n && n.toLowerCase() !== 'prompt-archive'); // ignore the marker label
+    }
+
+    // ───── GitHub API: prompts (issues) ─────────────────────────
+    async function ghListIssues() {
+      // Fetch open issues only. Closed = deleted. Exclude PRs and the marker label.
+      const url = `${ghBase()}/issues?state=open&filter=all&per_page=100`;
+      const res = await fetch(url, { headers: ghHeaders() });
+      if (res.status === 404) throw new Error('仓库不存在或无访问权限（404）');
+      if (res.status === 401) throw new Error('Token 无效或已过期（401）');
+      if (res.status === 403) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(`访问被拒（403）${data.message ? '：' + data.message : ''}`);
+      }
+      if (!res.ok) throw new Error(`加载失败（${res.status}）`);
+      const issues = await res.json();
+      // GitHub returns PRs in the issues endpoint too — filter them out
+      return issues.filter(i => !i.pull_request);
+    }
+
+    async function ensureLabelsExist(tags) {
+      // GitHub requires labels to exist before attaching to an issue.
+      // Try creating each; 422 means it already exists — ignore that.
+      const results = await Promise.allSettled(tags.map(t =>
+        fetch(`${ghBase()}/labels`, {
+          method: 'POST',
+          headers: ghHeaders({ 'Content-Type': 'application/json' }),
+          body: JSON.stringify({ name: t, color: 'fca5a5', description: '提示词标签' }),
+        }).then(r => ({ ok: r.ok, status: r.status }))
+      ));
+      // 422 = already exists (fine); other failures are real problems
+      const failed = results.filter((r, i) => r.status === 'rejected' || (r.value && r.value.status && !(r.value.ok || r.value.status === 422)));
+      if (failed.length) {
+        // Non-fatal: the issue may still save if labels already exist. Log but continue.
+        console.warn('Some labels could not be created:', failed);
+      }
+    }
+
+    async function ghCreateIssue(title, body, tags) {
+      await ensureLabelsExist(tags);
+      const res = await fetch(`${ghBase()}/issues`, {
+        method: 'POST',
+        headers: ghHeaders({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ title, body, labels: tags }),
+      });
+      if (res.status === 410) throw new Error('仓库 Issues 功能已禁用');
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(`创建失败（${res.status}）${data.message ? '：' + data.message : ''}`);
+      }
+      return await res.json();
+    }
+
+    async function ghUpdateIssue(number, title, body, tags) {
+      await ensureLabelsExist(tags);
+      const res = await fetch(`${ghBase()}/issues/${number}`, {
+        method: 'PATCH',
+        headers: ghHeaders({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ title, body, labels: tags }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(`修订失败（${res.status}）${data.message ? '：' + data.message : ''}`);
+      }
+      return await res.json();
+    }
+
+    async function ghCloseIssue(number) {
+      const res = await fetch(`${ghBase()}/issues/${number}`, {
+        method: 'PATCH',
+        headers: ghHeaders({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ state: 'closed' }),
+      });
+      if (!res.ok) throw new Error(`销毁失败（${res.status}）`);
+      return await res.json();
+    }
+
+    // ───── Render: categories ───────────────────────────────────
+    function getAllTags() {
+      const tagSet = new Set();
+      allPrompts.forEach(p => labelsToTags(p.labels).forEach(t => tagSet.add(t)));
+      return Array.from(tagSet).sort((a, b) => a.localeCompare(b, 'zh'));
+    }
+
+    function renderCategories() {
+      const container = $('categories');
+      const tags = getAllTags();
+      const allCount = allPrompts.length;
+      container.innerHTML = `<span class="drawer-label">分类目录</span>` +
+        `<button class="drawer-tab ${activeCategory === '' ? 'active' : ''}" data-cat="">全部 <span class="tab-count">${allCount}</span></button>` +
+        tags.map(t => {
+          const count = allPrompts.filter(p => labelsToTags(p.labels).includes(t)).length;
+          return `<button class="drawer-tab ${activeCategory === t ? 'active' : ''}" data-cat="${escapeHtml(t)}">${escapeHtml(t)} <span class="tab-count">${count}</span></button>`;
+        }).join('');
+
+      container.querySelectorAll('.drawer-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          activeCategory = tab.dataset.cat;
+          renderCategories();
+          renderGrid();
+        });
+      });
+    }
+
+    function getFilteredPrompts() {
+      let list = allPrompts;
+      if (activeCategory) {
+        list = list.filter(p => labelsToTags(p.labels).includes(activeCategory));
+      }
+      if (searchQuery) {
+        const q = searchQuery.toLowerCase();
+        list = list.filter(p =>
+          (p.title || '').toLowerCase().includes(q) ||
+          (p.body || '').toLowerCase().includes(q) ||
+          labelsToTags(p.labels).some(t => t.toLowerCase().includes(q))
+        );
+      }
+      return list;
+    }
+
+    function renderGrid() {
+      const grid = $('grid');
+      const list = getFilteredPrompts();
+      // Sort: newest created first
+      const ordered = list.slice().sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+      const total = ordered.length;
+
+      // Ledger meta with repo link
+      const repoUrl = cfg.owner && cfg.repo ? `https://github.com/${cfg.owner}/${cfg.repo}/issues` : '#';
+      const repoLabel = cfg.owner && cfg.repo ? `${cfg.owner}/${cfg.repo}` : '未配置';
+      $('ledgerMeta').innerHTML = `${padNum(total)} 条记录 · <a class="repo-link" href="${repoUrl}" target="_blank" rel="noopener">${escapeHtml(repoLabel)}</a>`;
+
+      if (total === 0) {
+        grid.innerHTML = allPrompts.length === 0
+          ? (isConfigured()
+              ? `<div class="state">
+                  <div class="state-mark">¶</div>
+                  <div class="state-title">档案尚空</div>
+                  <div class="state-desc">点击右上「新建条目」开始收录第一条提示词</div>
+                  <div class="state-actions"><button class="btn btn-primary" onclick="openCreateModal()">新建条目</button></div>
+                </div>`
+              : `<div class="state">
+                  <div class="state-mark">⚙</div>
+                  <div class="state-title">尚未连接仓库</div>
+                  <div class="state-desc">先点右上 ⚙ 配置 GitHub 仓库与 Token</div>
+                  <div class="state-actions"><button class="btn btn-primary" onclick="openSettings()">配置仓库</button></div>
+                </div>`)
+          : `<div class="state">
+              <div class="state-mark">⌕</div>
+              <div class="state-title">无匹配条目</div>
+              <div class="state-desc">尝试切换分类目录或调整检索词</div>
+            </div>`;
+        return;
+      }
+
+      grid.innerHTML = ordered.map((p, i) => {
+        const tags = labelsToTags(p.labels);
+        return `
+        <article class="card card-clickable" role="listitem" tabindex="0" data-number="${p.number}" onclick="openDetail(${p.number})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openDetail(${p.number})}">
+          <div class="card-top">
+            <span class="card-number">No. ${padNum(p.number)}</span>
+            <span class="card-date">${formatDate(p.created_at)}</span>
+          </div>
+          <h3 class="card-title">${escapeHtml(p.title || '（无题）')}</h3>
+          <div class="card-content">${escapeHtml(p.body || '')}</div>
+          ${tags.length ? `<div class="card-tags">${tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('')}</div>` : ''}
+          <div class="card-actions" onclick="event.stopPropagation()">
+            <button class="btn-link" onclick="copyPrompt(${p.number})">誊抄</button>
+            <button class="btn-link danger" onclick="deletePrompt(${p.number})">销毁</button>
+          </div>
+        </article>`;
+      }).join('');
+    }
+
+    function render() {
+      renderCategories();
+      renderGrid();
+    }
+
+    // ───── Load ─────────────────────────────────────────────────
+    async function loadPrompts() {
+      if (!isConfigured()) {
+        render();
+        return;
+      }
+      try {
+        const issues = await ghListIssues();
+        allPrompts = issues;
+        render();
+      } catch (e) {
+        $('grid').innerHTML = `<div class="state">
+          <div class="state-mark">!</div>
+          <div class="state-title">载入失败</div>
+          <div class="state-desc error">${escapeHtml(e.message)}</div>
+          <div class="state-actions">
+            <button class="btn btn-ghost" onclick="loadPrompts()">重试</button>
+            <button class="btn btn-ghost" onclick="openSettings()">修改配置</button>
+          </div>
+        </div>`;
+      }
+    }
+
+    // ───── Modal modes ─────────────────────────────────────────
+    function setModalMode(mode) {
+      modalMode = mode;
+      const isCreate = mode === 'create';
+      const isView = mode === 'view';
+      const isEdit = mode === 'edit';
+
+      $('viewBlock').hidden = !isView;
+      $('fieldTitle').hidden = isView;
+      $('fieldContent').hidden = isView;
+      $('fieldTags').hidden = isView;
+      $('detailMeta').hidden = isCreate;
+
+      $('editToggleBtn').hidden = !isView;
+      $('editToggleBtn').textContent = '编辑';
+      $('saveBtn').hidden = isView;
+      $('saveBtn').textContent = isCreate ? '归档' : '保存修改';
+      $('cancelBtn').textContent = isView ? '关闭' : '取消';
+      $('modalTitle').textContent = isCreate ? '新建条目' : (isView ? '条目详情' : '修订条目');
+    }
+
+    function openCreateModal() {
+      if (!isConfigured()) { openSettings(); return; }
+      editingNumber = null;
+      $('title').value = '';
+      $('content').value = '';
+      $('tags').value = '';
+      setModalMode('create');
+      $('modal').classList.add('show');
+      document.body.style.overflow = 'hidden';
+      setTimeout(() => $('title').focus(), 120);
+    }
+    window.openCreateModal = openCreateModal;
+
+    window.openDetail = function(number) {
+      const p = allPrompts.find(x => x.number === number);
+      if (!p) return;
+      editingNumber = number;
+      $('title').value = p.title || '';
+      $('content').value = p.body || '';
+      $('tags').value = labelsToTags(p.labels).join(', ');
+
+      $('metaNo').textContent = 'No. ' + padNum(p.number);
+      $('metaCreated').textContent = formatDateTime(p.created_at);
+      if (p.updated_at && new Date(p.updated_at).getTime() !== new Date(p.created_at).getTime()) {
+        $('metaUpdated').textContent = formatDateTime(p.updated_at);
+        $('metaUpdatedWrap').hidden = false;
+      } else {
+        $('metaUpdatedWrap').hidden = true;
+      }
+      if (p.html_url) {
+        $('metaIssueLink').href = p.html_url;
+        $('metaIssueWrap').hidden = false;
+      } else {
+        $('metaIssueWrap').hidden = true;
+      }
+
+      $('viewTitle').textContent = p.title || '（无题）';
+      $('viewContent').textContent = p.body || '';
+      const tags = labelsToTags(p.labels);
+      if (tags.length) {
+        $('viewTagsLabel').hidden = false;
+        $('viewTags').innerHTML = tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('');
+      } else {
+        $('viewTagsLabel').hidden = true;
+        $('viewTags').innerHTML = '';
+      }
+      setModalMode('view');
+      $('modal').classList.add('show');
+      document.body.style.overflow = 'hidden';
+    };
+
+    function closeModal() {
+      $('modal').classList.remove('show');
+      document.body.style.overflow = '';
+      editingNumber = null;
+      modalMode = 'create';
+    }
+
+    async function savePrompt() {
+      if (!isConfigured()) { openSettings(); return; }
+      const content = $('content').value.trim();
+      if (!content) {
+        showToast('请录入提示词内容', true);
+        $('content').focus();
+        return;
+      }
+      const title = $('title').value.trim();
+      const tags = $('tags').value.split(',').map(t => t.trim()).filter(Boolean);
+
+      const btn = $('saveBtn');
+      btn.disabled = true;
+      btn.textContent = '保存中…';
+
+      try {
+        if (modalMode === 'edit' && editingNumber) {
+          const updated = await ghUpdateIssue(editingNumber, title, content, tags);
+          const idx = allPrompts.findIndex(p => p.number === editingNumber);
+          if (idx >= 0) allPrompts[idx] = updated;
+          showToast('已修订');
+          // Return to view mode showing the updated entry
+          openDetail(updated.number);
+          render();
+        } else {
+          const created = await ghCreateIssue(title, content, tags);
+          allPrompts.push(created);
+          render();
+          showToast('已归档');
+          closeModal();
+        }
+      } catch (e) {
+        showToast(e.message || '保存失败，请重试', true);
+      } finally {
+        if (modalMode === 'edit' || modalMode === 'create') {
+          btn.disabled = false;
+          btn.textContent = modalMode === 'edit' ? '保存修改' : '归档';
+        }
+      }
+    }
+
+    window.copyPrompt = async function(number) {
+      const p = allPrompts.find(x => x.number === number);
+      if (!p) return;
+      const text = p.body || '';
+      try {
+        await navigator.clipboard.writeText(text);
+        showToast('已誊抄至剪贴板');
+      } catch (e) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); showToast('已誊抄至剪贴板'); }
+        catch (_) { showToast('誊抄失败', true); }
+        document.body.removeChild(ta);
+      }
+    };
+
+    window.deletePrompt = async function(number) {
+      if (!confirm('确定销毁此条目？对应 issue 将被关闭（GitHub API 不支持真删）。')) return;
+      try {
+        await ghCloseIssue(number);
+        allPrompts = allPrompts.filter(p => p.number !== number);
+        render();
+        showToast('已销毁');
+      } catch (e) {
+        showToast(e.message || '销毁失败', true);
+      }
+    };
+
+    // ───── Settings ────────────────────────────────────────────
+    function openSettings() {
+      $('ghOwner').value = cfg.owner || '';
+      $('ghRepo').value = cfg.repo || '';
+      $('ghToken').value = cfg.token || '';
+      $('connStatus').textContent = '未测试';
+      $('connStatus').style.color = 'var(--ink-faint)';
+      $('settingsModal').classList.add('show');
+      document.body.style.overflow = 'hidden';
+      setTimeout(() => $('ghOwner').focus(), 120);
+    }
+    window.openSettings = openSettings;
+
+    function closeSettings() {
+      $('settingsModal').classList.remove('show');
+      document.body.style.overflow = '';
+    }
+
+    async function testConnection() {
+      const owner = $('ghOwner').value.trim();
+      const repo = $('ghRepo').value.trim();
+      const token = $('ghToken').value.trim();
+      if (!owner || !repo || !token) {
+        $('connStatus').textContent = '请填写完整三项';
+        $('connStatus').style.color = 'var(--stamp-deep)';
+        return;
+      }
+      const btn = $('testConnBtn');
+      btn.disabled = true;
+      btn.textContent = '测试中…';
+      $('connStatus').textContent = '正在连接…';
+      $('connStatus').style.color = 'var(--ink-faint)';
+      try {
+        const res = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/vnd.github+json',
+            'X-GitHub-Api-Version': '2022-11-28',
+          },
+        });
+        if (res.status === 404) throw new Error('仓库不存在或 Token 无权访问');
+        if (res.status === 401) throw new Error('Token 无效');
+        if (res.status === 403) throw new Error('访问被拒（权限不足或触发限流）');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        if (data.has_issues === false) throw new Error('仓库已禁用 Issues');
+        $('connStatus').textContent = `✓ 连接成功 · ${data.full_name} · ${data.open_issues_count} 个开放 issue`;
+        $('connStatus').style.color = 'var(--stamp)';
+      } catch (e) {
+        $('connStatus').textContent = '✗ ' + e.message;
+        $('connStatus').style.color = 'var(--stamp-deep)';
+      } finally {
+        btn.disabled = false;
+        btn.textContent = '测试连接';
+      }
+    }
+
+    function saveSettings() {
+      const owner = $('ghOwner').value.trim();
+      const repo = $('ghRepo').value.trim();
+      const token = $('ghToken').value.trim();
+      if (!owner || !repo || !token) {
+        showToast('请填写完整三项', true);
+        return;
+      }
+      cfg.owner = owner; cfg.repo = repo; cfg.token = token;
+      localStorage.setItem(CFG_KEYS.owner, owner);
+      localStorage.setItem(CFG_KEYS.repo, repo);
+      localStorage.setItem(CFG_KEYS.token, token);
+      closeSettings();
+      activeCategory = '';
+      showToast('配置已保存');
+      loadPrompts();
+    }
+
+    // ───── Events ───────────────────────────────────────────────
+    $('addBtn').addEventListener('click', openCreateModal);
+    $('closeBtn').addEventListener('click', closeModal);
+    $('cancelBtn').addEventListener('click', closeModal);
+    $('editToggleBtn').addEventListener('click', () => {
+      setModalMode('edit');
+      setTimeout(() => $('title').focus(), 50);
+    });
+    $('saveBtn').addEventListener('click', savePrompt);
+    $('modal').addEventListener('click', (e) => {
+      if (e.target === $('modal')) closeModal();
+    });
+
+    $('settingsBtn').addEventListener('click', openSettings);
+    $('settingsCloseBtn').addEventListener('click', closeSettings);
+    $('testConnBtn').addEventListener('click', testConnection);
+    $('saveSettingsBtn').addEventListener('click', saveSettings);
+    $('settingsModal').addEventListener('click', (e) => {
+      if (e.target === $('settingsModal')) closeSettings();
+    });
+
+    $('search').addEventListener('input', (e) => {
+      searchQuery = e.target.value.trim();
+      renderGrid();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      const promptOpen = $('modal').classList.contains('show');
+      const settingsOpen = $('settingsModal').classList.contains('show');
+      const anyOpen = promptOpen || settingsOpen;
+
+      if (e.key === 'Escape') {
+        if (promptOpen) closeModal();
+        else if (settingsOpen) closeSettings();
+      }
+      if (anyOpen && (e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        e.preventDefault();
+        if (promptOpen) savePrompt();
+        else if (settingsOpen) saveSettings();
+      }
+      if (e.key === '/' && !anyOpen && document.activeElement !== $('search') && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+        $('search').focus();
+      }
+    });
+
+    // ───── Init ─────────────────────────────────────────────────
+    loadPrompts();
+  </script>
+</body>
+</html>
