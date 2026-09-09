@@ -432,7 +432,7 @@
       border: 1px solid var(--rule-strong);
       border-radius: var(--r-soft);
       width: 100%;
-      max-width: 600px;
+      max-width: 760px;
       box-shadow: 6px 6px 0 var(--rule-strong);
       animation: rise 0.22s cubic-bezier(0.2, 0.9, 0.3, 1);
     }
@@ -733,6 +733,7 @@
       <div class="sheet-footer">
         <button class="btn btn-ghost" id="cancelBtn">取消</button>
         <span style="flex:1"></span>
+        <button class="btn btn-ghost" id="copyBtn" hidden>誊抄</button>
         <button class="btn btn-ghost" id="editToggleBtn" hidden>编辑</button>
         <button class="btn btn-primary" id="saveBtn">归档</button>
       </div>
@@ -1057,6 +1058,7 @@
       $('fieldTags').hidden = isView;
       $('detailMeta').hidden = isCreate;
 
+      $('copyBtn').hidden = !isView;
       $('editToggleBtn').hidden = !isView;
       $('editToggleBtn').textContent = '编辑';
       $('saveBtn').hidden = isView;
@@ -1275,6 +1277,7 @@
     $('addBtn').addEventListener('click', openCreateModal);
     $('closeBtn').addEventListener('click', closeModal);
     $('cancelBtn').addEventListener('click', closeModal);
+    $('copyBtn').addEventListener('click', () => copyPrompt(editingNumber));
     $('editToggleBtn').addEventListener('click', () => {
       setModalMode('edit');
       setTimeout(() => $('title').focus(), 50);
